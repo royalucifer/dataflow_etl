@@ -7,6 +7,7 @@ from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.gcp.bigquery import BigquerySource
 
 from dataflow_etl.utils.env import CHANNEL_LISTS
+from dataflow_etl.data.BQuery import get_query
 
 
 class ZeroImputation(beam.DoFn):
@@ -42,8 +43,10 @@ def run(argv=None):
     pipeline_options = PipelineOptions(pipeline_args)
 
     with beam.Pipeline(option=pipeline_options) as p:
+        QUERY = get_query('channel', known_args)
+
         init_ch = p
-        | "ReadFromBQ" >> beam.io.Read(BigquerySource(query=""))
+        | "ReadFromBQ" >> beam.io.Read(BigquerySource(query=QUERY))
         | "Projected" >> beam.Map(projected_channel)
 
         logger.info(init_ch)
