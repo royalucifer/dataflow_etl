@@ -2,7 +2,7 @@ import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.gcp.bigquery import BigquerySource, WriteToBigQuery, BigQueryDisposition
 
-from utils.env import CHANNEL_LISTS
+from dataflow_etl.utils.env import CHANNEL_LISTS
 
 
 class ZeroImputation(beam.DoFn):
