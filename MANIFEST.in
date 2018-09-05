@@ -1,0 +1,1 @@
+recursive-include dataflow_etl/data/SQL *.sql
