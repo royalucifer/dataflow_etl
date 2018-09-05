@@ -17,7 +17,7 @@ MAX_NUM_WORKERS=10
 WORKER_MACHINE_TYPE=n1-standard-1
 AUTOSCALING=THROUGHPUT_BASED
 
-python -m test.py \
+python /home/chenweisung3621/dataflow/test.py \
     --date 2018-07-25 \
     --job_name ${JOB_NAME} \
     --runner ${RUNNER} \
@@ -29,4 +29,4 @@ python -m test.py \
     --max_num_workers ${MAX_NUM_WORKERS} \
     --machine_type ${WORKER_MACHINE_TYPE} \
     --autoscaling_algorithm ${AUTOSCALING} \
-    --setup_file setup.py
+    --setup_file /home/chenweisung3621/dataflow/setup.py

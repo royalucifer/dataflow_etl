@@ -1,7 +1,7 @@
 from setuptools import find_packages
 from setuptools import setup
 
-REQUIRED_PACKAGES = ["apache_beam"]
+REQUIRED_PACKAGES = []
 PACKAGE_NAME = "dataflow_etl"
 PACKAGE_VERSION = "0.01"
 

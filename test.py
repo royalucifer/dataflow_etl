@@ -4,7 +4,7 @@ import argparse
 
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
-from apache_beam.io.gcp.bigquery import BigquerySource
+from apache_beam.io.gcp.bigquery import BigQuerySource
 
 from dataflow_etl.utils.env import CHANNEL_LISTS
 from dataflow_etl.data.BQuery import get_query
@@ -21,7 +21,7 @@ def combine_channels(input_data):
     def pivot(channel):
         return (
                 input_data
-                | "FilterByChannel" >> beam.PaDo(ZeroImputation(), channel)
+                | "FilterByChannel" >> beam.ParDo(ZeroImputation(), channel)
                 | "SumByUser" >> beam.CombinePerKey(sum)
         )
     return {ch: pivot(ch) for ch in CHANNEL_LISTS}
@@ -46,7 +46,7 @@ def run(argv=None):
         QUERY = get_query('channel', known_args)
 
         init_ch = p
-        | "ReadFromBQ" >> beam.io.Read(BigquerySource(query=QUERY))
+        | "ReadFromBQ" >> beam.io.Read(BigQuerySource(query=QUERY))
         | "Projected" >> beam.Map(projected_channel)
 
         logger.info(init_ch)

@@ -1,6 +1,6 @@
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
-from apache_beam.io.gcp.bigquery import BigquerySource, WriteToBigQuery, BigQueryDisposition
+from apache_beam.io.gcp.bigquery import BigQuerySource, WriteToBigQuery, BigQueryDisposition
 
 from dataflow_etl.utils.env import CHANNEL_LISTS
 
@@ -16,7 +16,7 @@ def combine_channels(input_data):
     def pivot(channel):
         return (
                 input_data
-                | "FilterByChannel" >> beam.PaDo(ZeroImputation(), channel)
+                | "FilterByChannel" >> beam.ParDo(ZeroImputation(), channel)
                 | "SumByUser" >> beam.CombinePerKey(sum)
         )
     return {ch: pivot(ch) for ch in CHANNEL_LISTS}
@@ -51,11 +51,11 @@ def formate_to_dict(element):
 def run():
     with beam.Pipeline(option=PipelineOptions()) as p:
         all = p
-        | "ReadFromBQ" >> beam.io.Read(BigquerySource(query=""))
+        | "ReadFromBQ" >> beam.io.Read(BigQuerySource(query=""))
         | "Projected" >> beam.Map(projected_all)
 
         init_ch = p
-        | "ReadFromBQ" >> beam.io.Read(BigquerySource(query=""))
+        | "ReadFromBQ" >> beam.io.Read(BigQuerySource(query=""))
         | "Projected" >> beam.Map(projected_channel)
 
         (combine_channels(init_ch).update({"all": all})
