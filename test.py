@@ -42,7 +42,7 @@ def run(argv=None):
 
     pipeline_options = PipelineOptions(pipeline_args)
 
-    with beam.Pipeline(option=pipeline_options) as p:
+    with beam.Pipeline(options=pipeline_options) as p:
         QUERY = get_query('channel', known_args)
 
         init_ch = (p

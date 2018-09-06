@@ -49,14 +49,14 @@ def formate_to_dict(element):
 
 
 def run():
-    with beam.Pipeline(option=PipelineOptions()) as p:
-        all = p
+    with beam.Pipeline(options=PipelineOptions()) as p:
+        all = (p
         | "ReadFromBQ" >> beam.io.Read(BigQuerySource(query=""))
-        | "Projected" >> beam.Map(projected_all)
+        | "Projected" >> beam.Map(projected_all))
 
-        init_ch = p
+        init_ch = (p
         | "ReadFromBQ" >> beam.io.Read(BigQuerySource(query=""))
-        | "Projected" >> beam.Map(projected_channel)
+        | "Projected" >> beam.Map(projected_channel))
 
         (combine_channels(init_ch).update({"all": all})
         | "Formate" >> beam.Map(formate_to_dict)

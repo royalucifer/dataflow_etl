@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Basic Setting
 GCP_PROJECT=ddd-model-gap
-JOB_NAME=ETL-test
+JOB_NAME=etl-test
 RUNNER=DataflowRunner
 REGION=asia-east1
 ZONE=c
@@ -12,7 +12,7 @@ TEMP_LOCATION=gs://${BUCKET}/tmp
 STAGING_LOCATION=gs://${BUCKET}/staging
 
 # Workers
-NUM_WORKERS=0
+NUM_WORKERS=3
 MAX_NUM_WORKERS=10
 WORKER_MACHINE_TYPE=n1-standard-1
 AUTOSCALING=THROUGHPUT_BASED
