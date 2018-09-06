@@ -45,9 +45,9 @@ def run(argv=None):
     with beam.Pipeline(option=pipeline_options) as p:
         QUERY = get_query('channel', known_args)
 
-        init_ch = p
+        init_ch = (p
         | "ReadFromBQ" >> beam.io.Read(BigQuerySource(query=QUERY))
-        | "Projected" >> beam.Map(projected_channel)
+        | "Projected" >> beam.Map(projected_channel))
 
         logger.info(init_ch)
         print init_ch
