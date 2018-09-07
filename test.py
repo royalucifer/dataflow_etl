@@ -43,24 +43,20 @@ def run(argv=None):
     pipeline_options = PipelineOptions(pipeline_args)
 
     with beam.Pipeline(options=pipeline_options) as p:
-        QUERY = get_query('channel', known_args)
+        QUERY = get_query('channel', date=known_args.date)
 
         init_ch = (p
-        | "ReadFromBQ" >> beam.io.Read(BigQuerySource(query=QUERY))
+        | "ReadFromBQ" >> beam.io.Read(BigQuerySource(query=QUERY, use_standard_sql=True))
         | "Projected" >> beam.Map(projected_channel))
 
-        logger.info(init_ch)
-        print init_ch
-
-        result = (combine_channels(init_ch)
-                  | "Join" >> beam.CoGroupByKey())
+        # result = (combine_channels(init_ch)
+        #           | "Join" >> beam.CoGroupByKey())
                   # | "Output" >> beam.FlatMap())
-
-        logger.info(result)
-        print result
 
 
 if __name__ == "__main__":
     logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
+    logging.basicConfig(format="%(asctime)s - %(levelname)s - %(message)s",
+                        datefmt="%m-%d %H:%M:%S")
+    logging.root.setLevel(logging.INFO)
     run()

@@ -1,3 +1,4 @@
+#standardSQL
 SELECT
   cookies,
   channel,
@@ -81,7 +82,7 @@ FROM (
         `gap-ua-65075410-1.40312565.ga_sessions_*`, UNNEST(hits) AS h
       WHERE
         h.type = 'PAGE'
-        AND _TABLE_SUFFIX = FORMAT_DATE("%Y%m%d", DATE '{}')
+        AND _TABLE_SUFFIX = FORMAT_DATE("%Y%m%d", DATE '{date}')
         AND h.page.hostname NOT IN (
           'member.udn.com',
           'blog.udn.com',
