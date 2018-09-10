@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 from __future__ import absolute_import
 import logging
 import argparse
@@ -6,15 +7,16 @@ import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.gcp.bigquery import BigQuerySource
 
-from dataflow_etl.utils.env import CHANNEL_LISTS
+from dataflow_etl.utils.env import CHANNEL_LISTS, PROJECT_FIELDS
 from dataflow_etl.data.BQuery import get_query
 
 
 class ZeroImputation(beam.DoFn):
     def process(self, element, channel):
-        (uid, (ch, val)) = element
-        new_val = val if ch == channel else 0
-        return (uid, new_val)
+        ch = element["channel"]
+        val = element["totalPageviews"] if ch == channel else 0
+        uid = element["cookies"]
+        yield (uid, val)
 
 
 def combine_channels(input_data):
@@ -25,13 +27,6 @@ def combine_channels(input_data):
                 | "SumByUser" >> beam.CombinePerKey(sum)
         )
     return {ch: pivot(ch) for ch in CHANNEL_LISTS}
-
-
-def projected_channel(row):
-    PROJECT_FIELDS = ["channel", "totalPageviews"]
-    key = row['cookies']
-    val = (row[idx] for idx in PROJECT_FIELDS)
-    return (key, val)
 
 
 def run(argv=None):
@@ -47,7 +42,9 @@ def run(argv=None):
 
         init_ch = (p
         | "ReadFromBQ" >> beam.io.Read(BigQuerySource(query=QUERY, use_standard_sql=True))
-        | "Projected" >> beam.Map(projected_channel))
+        | "Projected" >> beam.Map(lambda row: {f: row[f] for f in PROJECT_FIELDS})
+        | "FilterByChannel" >> beam.ParDo(ZeroImputation(), u"運動")
+        | "SumByUser" >> beam.CombinePerKey(sum))
 
         # result = (combine_channels(init_ch)
         #           | "Join" >> beam.CoGroupByKey())
