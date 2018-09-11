@@ -14,7 +14,7 @@ STAGING_LOCATION=gs://${BUCKET}/staging
 # Workers
 NUM_WORKERS=3
 MAX_NUM_WORKERS=10
-WORKER_MACHINE_TYPE=n1-standard-1
+WORKER_MACHINE_TYPE=n1-standard-2
 AUTOSCALING=THROUGHPUT_BASED
 
 python /home/chenweisung3621/dataflow/test.py \

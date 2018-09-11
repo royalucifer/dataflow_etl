@@ -7,9 +7,11 @@ import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.gcp.bigquery import BigQuerySource
 
-from dataflow_etl.utils.env import CHANNEL_LISTS, PROJECT_FIELDS
+from dataflow_etl.utils import env
 from dataflow_etl.data.BQuery import get_query
 
+PROJECT_FIELDS = env.PROJECT_FIELDS
+CHANNEL_LISTS = env.CHANNEL_LISTS
 
 class ZeroImputation(beam.DoFn):
     def process(self, element, channel):
@@ -23,10 +25,25 @@ def combine_channels(input_data):
     def pivot(channel):
         return (
                 input_data
-                | "FilterByChannel" >> beam.ParDo(ZeroImputation(), channel)
-                | "SumByUser" >> beam.CombinePerKey(sum)
+                | "FilterByChannel_{}".format(channel) >> beam.ParDo(ZeroImputation(), channel)
+                | "SumByUser_{}".format(channel) >> beam.CombinePerKey(sum)
         )
     return {ch: pivot(ch) for ch in CHANNEL_LISTS}
+
+
+# class Pivot(beam.PTransform):
+#     def expand(self, pcoll, channel):
+#         return (
+#                 pcoll
+#                 | "FilterByChannel {}".format(channel) >> beam.ParDo(ZeroImputation(), channel)
+#                 | "SumByUser_{}".format(channel) >> beam.CombinePerKey(sum)
+#         )
+
+
+class Projection(beam.DoFn):
+    def process(self, element, fileds):
+        project_dict = {f: element[f] for f in fileds}
+        yield project_dict
 
 
 def run(argv=None):
@@ -42,12 +59,10 @@ def run(argv=None):
 
         init_ch = (p
         | "ReadFromBQ" >> beam.io.Read(BigQuerySource(query=QUERY, use_standard_sql=True))
-        | "Projected" >> beam.Map(lambda row: {f: row[f] for f in PROJECT_FIELDS})
-        | "FilterByChannel" >> beam.ParDo(ZeroImputation(), u"運動")
-        | "SumByUser" >> beam.CombinePerKey(sum))
+        | "Projected" >> beam.ParDo(Projection(), PROJECT_FIELDS))
 
-        # result = (combine_channels(init_ch)
-        #           | "Join" >> beam.CoGroupByKey())
+        result = (combine_channels(init_ch)
+                  | "Join" >> beam.CoGroupByKey())
                   # | "Output" >> beam.FlatMap())
 
 
