@@ -12,9 +12,9 @@ TEMP_LOCATION=gs://${BUCKET}/tmp
 STAGING_LOCATION=gs://${BUCKET}/staging
 
 # Workers
-NUM_WORKERS=3
-MAX_NUM_WORKERS=10
-WORKER_MACHINE_TYPE=n1-standard-2
+NUM_WORKERS=5
+MAX_NUM_WORKERS=20
+WORKER_MACHINE_TYPE=n1-standard-1
 AUTOSCALING=THROUGHPUT_BASED
 
 python /home/chenweisung3621/dataflow/test.py \
@@ -27,6 +27,6 @@ python /home/chenweisung3621/dataflow/test.py \
     --region ${REGION} \
     --num_workers ${NUM_WORKERS} \
     --max_num_workers ${MAX_NUM_WORKERS} \
-    --machine_type ${WORKER_MACHINE_TYPE} \
+    --worker_machine_type ${WORKER_MACHINE_TYPE} \
     --autoscaling_algorithm ${AUTOSCALING} \
     --setup_file /home/chenweisung3621/dataflow/setup.py
