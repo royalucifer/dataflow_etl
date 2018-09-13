@@ -67,7 +67,7 @@ def FormatAsCSV(element):
         return result
 
     key, val = element
-    records_list = ['"%s"' % v for k, v in flatten_dict(val).items()]
+    records_list = ["%s" % v for k, v in flatten_dict(val).items()]
     records_list.insert(0, key)
     return "\x14".join(records_list)
 
@@ -85,7 +85,7 @@ def run(argv=None):
     known_args, pipeline_args = parser.parse_known_args(argv)
 
     FILE_NAME = ".csv"
-    FILE_PATH = os.path.join(known_args.output, "{}-view"+known_args.date)
+    FILE_PATH = os.path.join(known_args.output, known_args.date+"-view")
 
     pipeline_options = PipelineOptions(pipeline_args)
 
