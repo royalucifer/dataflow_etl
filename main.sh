@@ -19,6 +19,7 @@ AUTOSCALING=THROUGHPUT_BASED
 
 python /home/chenweisung3621/dataflow/test.py \
     --date 2018-07-25 \
+    --output ${TEMP_LOCATION} \
     --job_name ${JOB_NAME} \
     --runner ${RUNNER} \
     --project ${GCP_PROJECT} \
