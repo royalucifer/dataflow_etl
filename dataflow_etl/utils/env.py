@@ -8,9 +8,12 @@ CHANNEL_LISTS = ["education", "local", "real_time", "china", "society", "digital
 #                  "汽車", "遊戲", "房產", "趣聞", "時尚", "政治", "要聞", "消費", "生活",
 #                  "財經", "投資", "國際", "專題", "評論", "運動", "閱讀", "電商", "其他"]
 
-PROJECT_FIELDS = ["cookies", "channel", "totalPageviews"]
+PROJECT_FIELDS = {
+    "ALL": ["totalSessions", "totalDuration", "totalPageviews", "avgTimePerSession", "avgPageviewsPerSession"],
+    "CH": ["cookies", "channel", "totalPageviews"]
+}
 
-HEADERS = "\x14".join(
-    ["cookies", "book", "car", "china", "comment", "digital", "e_commerce", "education", "entertainment",
-     "fashion", "finance", "fun", "game", "global", "health", "house", "investment", "life", "local",
-     "news", "other", "politic", "real_time", "shopping", "society", "sport", "topic", "travel"])
+COLUMNS = ["cookies", "book", "car", "china", "comment", "digital", "e_commerce", "education", "entertainment",
+           "fashion", "finance", "fun", "game", "global", "health", "house", "investment", "life", "local",
+           "news", "other", "politic", "real_time", "shopping", "society", "sport", "topic", "travel",
+           "totalSessions", "totalPageviews", "avgTimePerSession", "avgPageviewsPerSession"]

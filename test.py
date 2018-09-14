@@ -11,32 +11,13 @@ from apache_beam.io import BigQuerySource, WriteToText
 from dataflow_etl.utils import env
 from dataflow_etl.data.BQuery import get_query
 
-PROJECT_FIELDS = env.PROJECT_FIELDS
+PROJECT_FIELDS_CH = env.PROJECT_FIELDS['CH']
+PROJECT_FIELDS_ALL = env.PROJECT_FIELDS['ALL']
 CHANNEL_LISTS = env.CHANNEL_LISTS
-HEADERS = env.HEADERS
+HEADERS = "\x14".join(env.COLUMNS)
+COLUMNS = env.COLUMNS[1:]
 
-# class ZeroImputation(beam.DoFn):
-#     def process(self, element, field):
-#         ch = element["channel"]
-#         val = element["totalPageviews"] if ch == field else 0
-#         uid = element["cookies"]
-#         yield (uid, val)
-#
-#
-# def CombineChPColl(input_data):
-#     def pivot(field):
-#         fname = field.title()
-#         filter_step_name = "FilterByChannel{}".format(fname)
-#         sum_step_name = "SumByUser{}".format(fname)
-#         return (
-#                 input_data
-#                 | filter_step_name >> beam.ParDo(ZeroImputation(), field)
-#                 | sum_step_name >> beam.CombinePerKey(sum)
-#         )
-#     return {ch: pivot(ch) for ch in CHANNEL_LISTS}
-
-
-def CombineChPCollTest(input_data):
+def CombineChPColl(input_data):
     def pivot(field):
         fname = field.title()
         filter_step_name = "FilterByChannel{}".format(fname)
@@ -51,31 +32,72 @@ def CombineChPCollTest(input_data):
     return {ch: pivot(ch) for ch in CHANNEL_LISTS}
 
 
-def FormatAsCSV(element):
+# def FormatAsCSV(element):
+#
+#     def flatten_dict(records):
+#         result = dict()
+#         for k, v in records.items():
+#             if isinstance(v, dict):
+#                 result.update(flatten_dict(v))
+#             else:
+#                 if len(v) == 0:
+#                     v = 0
+#                 elif len(v) == 1:
+#                     v = v[0]
+#                 result[k] = v
+#         return result
+#
+#     key, val = element
+#     val = flatten_dict(val)
+#     records_list = ["%s" % val[h] for h in HEADERS]
+#     # records_list = ["%s" % v for v in flatten_dict(val).values()]
+#     records_list.insert(0, key)
+#     result = "\x14".join(records_list)
+#     return result
 
-    def flatten_dict(records):
+
+class FormatAsCSV(beam.DoFn):
+
+    def _flatten_dict(self, records):
         result = dict()
         for k, v in records.items():
             if isinstance(v, dict):
-                result.update(flatten_dict(v))
+                result.update(self._flatten_dict(v))
+            elif len(v) > 0 and isinstance(v[0], dict):
+                result.update(self._flatten_dict(v[0]))
             else:
                 if len(v) == 0:
                     v = 0
                 elif len(v) == 1:
-                    v = v[0]
+                    v = v[0] if isinstance(v[0], (int, str)) else 0
+                else:
+                    v = ",".join([str(x) for x in v])
                 result[k] = v
         return result
 
-    key, val = element
-    records_list = ["%s" % v for k, v in flatten_dict(val).items()]
-    records_list.insert(0, key)
-    return "\x14".join(records_list)
+    def process(self, element, columns):
+        key, val = element
+        flat_val = self._flatten_dict(val)
+
+        records_list = ["%s" % flat_val[h] for h in columns]
+        # records_list = ["%s" % v for v in flat_val.values()]
+        records_list.insert(0, key)
+        result = "\x14".join(records_list)
+        yield result
 
 
-class Projection(beam.DoFn):
+class ProjectionCh(beam.DoFn):
     def process(self, element, fileds):
         project_dict = {f: element[f] for f in fileds}
         yield project_dict
+
+
+class ProjectionAll(beam.DoFn):
+    def process(self, element, fields):
+        key = element["cookies"]
+        # 為了之後合併方便，值須為 list
+        val = {idx: [element[idx]] for idx in fields}
+        yield (key, val)
 
 
 def run(argv=None):
@@ -84,22 +106,30 @@ def run(argv=None):
     parser.add_argument("--output", required=True, type=str, help="")
     known_args, pipeline_args = parser.parse_known_args(argv)
 
-    FILE_NAME = ".csv"
-    FILE_PATH = os.path.join(known_args.output, known_args.date+"-view")
+    file_path = os.path.join(known_args.output, known_args.date, known_args.date+"-view")
 
     pipeline_options = PipelineOptions(pipeline_args)
 
     with beam.Pipeline(options=pipeline_options) as p:
-        QUERY = get_query('channel', date=known_args.date)
+        query_of_all = get_query('all', date=known_args.date)
+        query_of_ch = get_query('channel', date=known_args.date)
+
+        init_all = (p
+        | "ReadFromBQ_All" >> beam.io.Read(BigQuerySource(query=query_of_all, use_standard_sql=True))
+        | "Projected_All" >> beam.ParDo(ProjectionAll(), PROJECT_FIELDS_ALL))
+
 
         init_ch = (p
-        | "ReadFromBQ" >> beam.io.Read(BigQuerySource(query=QUERY, use_standard_sql=True))
-        | "Projected" >> beam.ParDo(Projection(), PROJECT_FIELDS))
+        | "ReadFromBQ_Ch" >> beam.io.Read(BigQuerySource(query=query_of_ch, use_standard_sql=True))
+        | "Projected_Ch" >> beam.ParDo(ProjectionCh(), PROJECT_FIELDS_CH))
 
-        result = (CombineChPCollTest(init_ch)
-                  | "Join" >> beam.CoGroupByKey()
-                  | "Format" >> beam.Map(FormatAsCSV)
-                  | "Write" >> WriteToText(FILE_PATH, FILE_NAME, header=HEADERS))
+        combine_pcoll = CombineChPColl(init_ch)
+        combine_pcoll.update({'All': init_all})
+
+        (combine_pcoll
+        | "Join" >> beam.CoGroupByKey()
+        | "Format" >> beam.ParDo(FormatAsCSV(), COLUMNS)
+        | "Write" >> WriteToText(file_path, ".csv", header=HEADERS))
 
 
 if __name__ == "__main__":

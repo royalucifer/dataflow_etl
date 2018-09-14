@@ -5,6 +5,27 @@ from apache_beam.io.gcp.bigquery import BigQuerySource, WriteToBigQuery, BigQuer
 from dataflow_etl.utils.env import CHANNEL_LISTS
 
 
+# class ZeroImputation(beam.DoFn):
+#     def process(self, element, field):
+#         ch = element["channel"]
+#         val = element["totalPageviews"] if ch == field else 0
+#         uid = element["cookies"]
+#         yield (uid, val)
+#
+#
+# def CombineChPColl(input_data):
+#     def pivot(field):
+#         fname = field.title()
+#         filter_step_name = "FilterByChannel{}".format(fname)
+#         sum_step_name = "SumByUser{}".format(fname)
+#         return (
+#                 input_data
+#                 | filter_step_name >> beam.ParDo(ZeroImputation(), field)
+#                 | sum_step_name >> beam.CombinePerKey(sum)
+#         )
+#     return {ch: pivot(ch) for ch in CHANNEL_LISTS}
+
+
 class ZeroImputation(beam.DoFn):
     def process(self, element, channel):
         (uid, (ch, val)) = element
