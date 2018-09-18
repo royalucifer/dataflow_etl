@@ -10,10 +10,14 @@ CHANNEL_LISTS = ["education", "local", "real_time", "china", "society", "digital
 
 PROJECT_FIELDS = {
     "ALL": ["totalSessions", "totalDuration", "totalPageviews", "avgTimePerSession", "avgPageviewsPerSession"],
-    "CH": ["cookies", "channel", "totalPageviews"]
+    "CH": ["cookies", "channel", "totalPageviews"],
+    "USER": ["cookies", "visitWeek", "visitTime", "device", "brand", "region", "source", "num"]
 }
 
-COLUMNS = ["cookies", "book", "car", "china", "comment", "digital", "e_commerce", "education", "entertainment",
-           "fashion", "finance", "fun", "game", "global", "health", "house", "investment", "life", "local",
-           "news", "other", "politic", "real_time", "shopping", "society", "sport", "topic", "travel",
-           "totalSessions", "totalPageviews", "avgTimePerSession", "avgPageviewsPerSession"]
+COLUMNS = {
+    "VIEW": ["cookies", "book", "car", "china", "comment", "digital", "e_commerce", "education", "entertainment",
+             "fashion", "finance", "fun", "game", "global", "health", "house", "investment", "life", "local",
+             "news", "other", "politic", "real_time", "shopping", "society", "sport", "topic", "travel",
+             "totalSessions", "totalPageviews", "avgTimePerSession", "avgPageviewsPerSession"],
+    "USER": ["cookies", "visitWeek", "visitTime", "device", "brand", "region", "source", "num"]
+}

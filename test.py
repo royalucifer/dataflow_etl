@@ -14,8 +14,8 @@ from dataflow_etl.data.BQuery import get_query
 PROJECT_FIELDS_CH = env.PROJECT_FIELDS['CH']
 PROJECT_FIELDS_ALL = env.PROJECT_FIELDS['ALL']
 CHANNEL_LISTS = env.CHANNEL_LISTS
-HEADERS = "\x14".join(env.COLUMNS)
-COLUMNS = env.COLUMNS[1:]
+HEADERS = "\x14".join(env.COLUMNS["VIEW"])
+COLUMNS = env.COLUMNS["VIEW"][1:]
 
 def CombineChPColl(input_data):
     def pivot(field):
@@ -63,13 +63,17 @@ class FormatAsCSV(beam.DoFn):
         for k, v in records.items():
             if isinstance(v, dict):
                 result.update(self._flatten_dict(v))
-            elif len(v) > 0 and isinstance(v[0], dict):
+            elif isinstance(v, (int, str)):
+                result[k] = v if v else 0
+            elif isinstance(v[0], dict):
                 result.update(self._flatten_dict(v[0]))
+            # elif len(v) > 0 and isinstance(v[0], dict):
+            #     result.update(self._flatten_dict(v[0]))
             else:
                 if len(v) == 0:
                     v = 0
                 elif len(v) == 1:
-                    v = v[0] if isinstance(v[0], (int, str)) else 0
+                    v = v[0] if v[0] else 0
                 else:
                     v = ",".join([str(x) for x in v])
                 result[k] = v
@@ -80,7 +84,6 @@ class FormatAsCSV(beam.DoFn):
         flat_val = self._flatten_dict(val)
 
         records_list = ["%s" % flat_val[h] for h in columns]
-        # records_list = ["%s" % v for v in flat_val.values()]
         records_list.insert(0, key)
         result = "\x14".join(records_list)
         yield result
