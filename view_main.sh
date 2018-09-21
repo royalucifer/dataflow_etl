@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Basic Setting
 GCP_PROJECT=ddd-model-gap
-JOB_NAME=etl-test
+JOB_NAME=etl-ga-view
 RUNNER=DataflowRunner
 REGION=asia-east1
 ZONE=c
 
 # Saving Path
-BUCKET=dataflow-etl-pepeline
+BUCKET=dataflow-etl-pipeline
 TEMP_LOCATION=gs://${BUCKET}/temp
 STAGING_LOCATION=gs://${BUCKET}/staging
 OUTPUT_LOCATION=gs://${BUCKET}/data
@@ -21,7 +21,7 @@ AUTOSCALING=THROUGHPUT_BASED
 DT="2018-07-01"
 until [[ $DT > "2018-09-20" ]]; do
     echo "$DT"
-    python /home/chenweisung3621/dataflow/view_main.py \
+    python /home/chenweisung3621/dataflow/view_pipe.py \
         --date ${DT} \
         --output ${OUTPUT_LOCATION} \
         --job_name ${JOB_NAME} \
