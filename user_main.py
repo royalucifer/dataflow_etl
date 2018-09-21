@@ -24,7 +24,7 @@ def run(argv=None):
     parser.add_argument("--output", required=True, type=str, help="")
     known_args, pipeline_args = parser.parse_known_args(argv)
 
-    file_path = os.path.join(known_args.output, known_args.date, known_args.date+"-user")
+    file_path = os.path.join(known_args.output, known_args.date, "user", known_args.date+"-user")
 
     pipeline_options = PipelineOptions(pipeline_args)
 
