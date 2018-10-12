@@ -28,12 +28,12 @@ USER_SCHEMA = Parse('''
    "name": "User",
    "fields": [
        {"name": "cookies", "type": "string"},
-       {"name": "visitWeek",  "type": ["string", "null"]},
-       {"name": "visitTime", "type": ["string", "null"]},
-       {"name": "device", "type": ["string", "null"]},
-       {"name": "brand", "type": ["string", "null"]},
-       {"name": "region", "type": ["string", "null"]},
-       {"name": "source", "type": ["string", "null"]},
+       {"name": "visitWeek",  "type": ["int", "null"]},
+       {"name": "visitTime", "type": ["int", "null"]},
+       {"name": "device", "type": ["int", "null"]},
+       {"name": "brand", "type": ["int", "null"]},
+       {"name": "region", "type": ["int", "null"]},
+       {"name": "source", "type": ["int", "null"]},
        {"name": "num", "type": "int"}
    ]
   }

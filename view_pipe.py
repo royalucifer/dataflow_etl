@@ -70,7 +70,7 @@ def run(argv=None):
         (combine_pcoll
         | "Join" >> beam.CoGroupByKey()
         | "Format" >> beam.ParDo(FormatAsAvro())
-        | "Write" >> WriteToAvro(file_path, ".avro", schema=SCHEMA, use_fastavro=True, shard_name_template="-SS"))
+        | "Write" >> WriteToAvro(file_path, schema=SCHEMA, use_fastavro=True, shard_name_template="-SS"))
 
 
 if __name__ == "__main__":

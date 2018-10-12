@@ -42,7 +42,7 @@ def run(argv=None):
         | "ReadFromBQ" >> beam.io.Read(BigQuerySource(query=query_of_user, use_standard_sql=True))
         | "Projected" >> beam.ParDo(ProjectionBQ(), PROJECT_FIELDS_USER)
         | "Format" >> beam.ParDo(FormatAsAvro(), False)
-        | "Write" >> WriteToAvro(file_path, ".avro", schema=SCHEMA, use_fastavro=True, shard_name_template="-SS"))
+        | "Write" >> WriteToAvro(file_path, schema=SCHEMA, use_fastavro=True, shard_name_template="-SS"))
 
 
 if __name__ == "__main__":

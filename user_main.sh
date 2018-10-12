@@ -10,7 +10,7 @@ ZONE=c
 BUCKET=dataflow-etl-pipeline
 TEMP_LOCATION=gs://${BUCKET}/temp
 STAGING_LOCATION=gs://${BUCKET}/staging
-OUTPUT_LOCATION=gs://${BUCKET}/data
+OUTPUT_LOCATION=gs://${BUCKET}/data_avro
 
 # Workers
 NUM_WORKERS=5
