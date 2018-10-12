@@ -1,7 +1,7 @@
 from setuptools import find_packages
 from setuptools import setup
 
-REQUIRED_PACKAGES = ["apache-beam[gcp]"]
+REQUIRED_PACKAGES = ["apache-beam[gcp]", "avro"]
 PACKAGE_NAME = "dataflow_etl"
 PACKAGE_VERSION = "0.01"
 

@@ -6,11 +6,11 @@ import argparse
 
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
-from apache_beam.io import BigQuerySource, WriteToText
+from apache_beam.io import BigQuerySource, WriteToText, WriteToAvro
 
 from dataflow_etl.utils import env
 from dataflow_etl.data.BQuery import get_query
-from dataflow_etl.transform.format import FormatAsCSV
+from dataflow_etl.transform.format import FormatAsCSV, FormatAsAvro
 from dataflow_etl.transform.project import ProjectionBQ
 
 PROJECT_FIELDS_CH = env.PROJECT_FIELDS['CH']
@@ -18,6 +18,7 @@ PROJECT_FIELDS_ALL = env.PROJECT_FIELDS['ALL']
 CHANNEL_LISTS = env.CHANNEL_LISTS
 HEADERS = "\x14".join(env.COLUMNS["VIEW"])
 COLUMNS = env.COLUMNS["VIEW"][1:]
+SCHEMA = env.VIEW_SCHEMA
 
 
 def CombineChPColl(input_data):
@@ -61,10 +62,15 @@ def run(argv=None):
         combine_pcoll = CombineChPColl(init_ch)
         combine_pcoll.update({'All': init_all})
 
+        # (combine_pcoll
+        # | "Join" >> beam.CoGroupByKey()
+        # | "Format" >> beam.ParDo(FormatAsCSV(), COLUMNS)
+        # | "Write" >> WriteToText(file_path, ".csv", shard_name_template="-SS", header=HEADERS))
+
         (combine_pcoll
         | "Join" >> beam.CoGroupByKey()
-        | "Format" >> beam.ParDo(FormatAsCSV(), COLUMNS)
-        | "Write" >> WriteToText(file_path, ".csv", shard_name_template="-SS", header=HEADERS))
+        | "Format" >> beam.ParDo(FormatAsAvro())
+        | "Write" >> WriteToAvro(file_path, ".avro", schema=SCHEMA, use_fastavro=True, shard_name_template="-SS"))
 
 
 if __name__ == "__main__":
