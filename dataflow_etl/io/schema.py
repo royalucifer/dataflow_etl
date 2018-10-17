@@ -11,7 +11,6 @@ def create_schema(fields):
         tmp_schema.name = field
         tmp_schema.mode = "nullable"
 
-        # if field in ("cookies", "visitDate"):
         if field == "cookies":
             tmp_schema.type = "STRING"
         elif field == "visitDate":

@@ -10,7 +10,7 @@ from apache_beam.io import BigQuerySource, BigQuerySink, WriteToText, WriteToAvr
 
 from dataflow_etl.utils import env
 from dataflow_etl.data.BQuery import get_query
-from dataflow_etl.transform.format import FormatAsCSV, FormatAsAvro
+from dataflow_etl.transform.format import FormatAsCSV
 from dataflow_etl.transform.project import ProjectionBQ
 from dataflow_etl.io.schema import create_schema
 
