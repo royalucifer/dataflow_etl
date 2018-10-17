@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from __future__ import absolute_import
 import os
+import re
 import logging
 import argparse
 
@@ -27,6 +28,7 @@ def run(argv=None):
     known_args, pipeline_args = parser.parse_known_args(argv)
 
     # file_path = os.path.join(known_args.output, known_args.date, "user", known_args.date+"-user")
+    table_name = known_args.output + "$" + re.sub("-", "", known_args.date)
 
     pipeline_options = PipelineOptions(pipeline_args)
 
@@ -46,7 +48,7 @@ def run(argv=None):
         | "Projected" >> beam.ParDo(ProjectionBQ(), PROJECT_FIELDS_USER)
         | "Write" >> beam.io.Write(
                     BigQuerySink(
-                        known_args.output,
+                        table_name,
                         schema=SCHEMA,
                         create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
                         write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND)))
