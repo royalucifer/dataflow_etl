@@ -6,19 +6,21 @@ import argparse
 
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
-from apache_beam.io import BigQuerySource, WriteToText, WriteToAvro
+from apache_beam.io import BigQuerySource, BigQuerySink, WriteToText, WriteToAvro
 
 from dataflow_etl.utils import env
 from dataflow_etl.data.BQuery import get_query
 from dataflow_etl.transform.format import FormatAsCSV, FormatAsAvro
 from dataflow_etl.transform.project import ProjectionBQ
+from dataflow_etl.io.schema import create_schema
+
 
 PROJECT_FIELDS_CH = env.PROJECT_FIELDS['CH']
 PROJECT_FIELDS_ALL = env.PROJECT_FIELDS['ALL']
 CHANNEL_LISTS = env.CHANNEL_LISTS
 HEADERS = "\x14".join(env.COLUMNS["VIEW"])
 COLUMNS = env.COLUMNS["VIEW"][1:]
-SCHEMA = env.VIEW_SCHEMA
+SCHEMA = create_schema(env.COLUMNS["VIEW"])
 
 
 def CombineChPColl(input_data):
@@ -39,10 +41,10 @@ def CombineChPColl(input_data):
 def run(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--date", required=True, type=str, help="")
-    parser.add_argument("--output", required=True, type=str, help="")
+    parser.add_argument("--output", required=True, type=str, help="PROJECT:DATASET.TABLE")
     known_args, pipeline_args = parser.parse_known_args(argv)
 
-    file_path = os.path.join(known_args.output, known_args.date, "view", known_args.date+"-view")
+    # file_path = os.path.join(known_args.output, known_args.date, "view", known_args.date+"-view")
 
     pipeline_options = PipelineOptions(pipeline_args)
 
@@ -70,7 +72,13 @@ def run(argv=None):
         (combine_pcoll
         | "Join" >> beam.CoGroupByKey()
         | "Format" >> beam.ParDo(FormatAsAvro())
-        | "Write" >> WriteToAvro(file_path, schema=SCHEMA, use_fastavro=True, shard_name_template="-SS"))
+        | "Write" >> beam.io.Write(
+                    BigQuerySink(
+                        known_args.output,
+                        schema=SCHEMA,
+                        create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
+                        write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND)))
+        # | "Write" >> WriteToAvro(file_path, schema=SCHEMA, use_fastavro=True, shard_name_template="-SS"))
 
 
 if __name__ == "__main__":

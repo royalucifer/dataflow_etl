@@ -10,7 +10,8 @@ ZONE=c
 BUCKET=dataflow-etl-pipeline
 TEMP_LOCATION=gs://${BUCKET}/temp
 STAGING_LOCATION=gs://${BUCKET}/staging
-OUTPUT_LOCATION=gs://${BUCKET}/data_avro
+#OUTPUT_LOCATION=gs://${BUCKET}/data_avro
+OUTPUT_LOCATION=gap-ua-65075410-1:gap_model.daily_view
 
 # Workers
 NUM_WORKERS=5

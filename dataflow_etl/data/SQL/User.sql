@@ -1,4 +1,5 @@
 SELECT
+  PARSE_DATE('%Y%m%d', `date`) AS visitDate,
   clientId AS cookies,
   EXTRACT(DAYOFWEEK FROM PARSE_DATE('%Y%m%d', `date`)) AS visitWeek,
   CASE
@@ -103,6 +104,7 @@ WHERE
   AND _TABLE_SUFFIX = FORMAT_DATE("%Y%m%d", DATE '{date}')
 GROUP BY
   cookies,
+  visitDate,
   visitWeek,
   visitTime,
   device,

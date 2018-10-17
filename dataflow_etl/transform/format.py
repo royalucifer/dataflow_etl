@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+import logging
 import apache_beam as beam
 
 
