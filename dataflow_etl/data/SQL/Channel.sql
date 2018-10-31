@@ -57,6 +57,7 @@ FROM (
       WHEN title_2 = '讀創故事' OR title_3 = '讀創故事' THEN 'book' --'閱讀'
       WHEN title_3 = '讀.書.人' THEN 'book' --'閱讀'
 
+      WHEN hostname = 'video.udn.com' THEN 'video' --'影音'
       WHEN hostname IN ('udesign.udnfunlife.com', 'tickets.udnfunlife.com', 'shopping.udn.com') THEN 'e_commerce' --'電商'
 
       ELSE 'other' --'其他'
@@ -92,8 +93,7 @@ FROM (
           'blog.udn.com',
           'classic-blog.udn.com',
           'udndata.com',
-          'paper.udn.com',
-          'video.udn.com') ) ))
+          'paper.udn.com') ) ))
 GROUP BY
   cookies,
   channel

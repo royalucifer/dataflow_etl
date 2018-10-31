@@ -23,7 +23,7 @@ SELECT
     WHEN device.mobileDeviceBranding = 'Apple' THEN 1 --'apple'
     WHEN device.mobileDeviceBranding = 'Samsung' THEN 2 --'samsung'
     WHEN device.mobileDeviceBranding = 'Asus' THEN 3 --'asus'
-    WHEN device.mobileDeviceBranding = 'Sony' AND device.mobileDeviceBranding = 'SonyEricsson' THEN 4 --'sony'
+    WHEN device.mobileDeviceBranding = 'Sony' OR device.mobileDeviceBranding = 'SonyEricsson' THEN 4 --'sony'
     WHEN device.mobileDeviceBranding = 'HTC' THEN 5 --'htc'
     WHEN device.mobileDeviceBranding = 'OPPO' THEN 6 --'oppo'
     WHEN device.mobileDeviceBranding = 'Xiaomi' THEN 7 --'mi'

@@ -15,7 +15,7 @@ OUTPUT_LOCATION=gap-ua-65075410-1:gap_model.daily_user
 
 # Workers
 NUM_WORKERS=5
-MAX_NUM_WORKERS=20
+MAX_NUM_WORKERS=100
 WORKER_MACHINE_TYPE=n1-standard-1
 AUTOSCALING=THROUGHPUT_BASED
 
@@ -25,7 +25,7 @@ until [[ $DT > "2018-09-20" ]]; do
     python /home/chenweisung3621/dataflow/user_pipe.py \
         --date ${DT} \
         --output ${OUTPUT_LOCATION} \
-        --job_name ${JOB_NAME} \
+        --job_name ${JOB_NAME}-${DT} \
         --runner ${RUNNER} \
         --project ${GCP_PROJECT} \
         --temp_location ${TEMP_LOCATION} \

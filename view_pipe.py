@@ -24,17 +24,25 @@ COLUMNS = env.COLUMNS["VIEW"][1:]
 SCHEMA = create_schema(env.COLUMNS["VIEW"])
 
 
+@beam.ptransform_fn
 def CombineChPColl(input_data):
+    @beam.ptransform_fn
     def pivot(field):
-        fname = field.title()
-        filter_step_name = "FilterByChannel{}".format(fname)
-        project_step_name = "KeyValueProject{}".format(fname)
-        sum_step_name = "SumByUser{}".format(fname)
+        # fname = field.title()
+        # filter_step_name = "FilterByChannel{}".format(fname)
+        # project_step_name = "KeyValueProject{}".format(fname)
+        # sum_step_name = "SumByUser{}".format(fname)
+        # return (
+        #         input_data
+        #         | filter_step_name >> beam.Filter(lambda row: row["channel"] == field)
+        #         | project_step_name >> beam.Map(lambda row: (row["cookies"], row["totalPageviews"]))
+        #         | sum_step_name >> beam.CombinePerKey(sum)
+        # )
         return (
                 input_data
-                | filter_step_name >> beam.Filter(lambda row: row["channel"] == field)
-                | project_step_name >> beam.Map(lambda row: (row["cookies"], row["totalPageviews"]))
-                | sum_step_name >> beam.CombinePerKey(sum)
+                | beam.Filter(lambda row: row["channel"] == field)
+                | beam.Map(lambda row: (row["cookies"], row["totalPageviews"]))
+                | beam.CombinePerKey(sum)
         )
     return {ch: pivot(ch) for ch in CHANNEL_LISTS}
 
@@ -58,12 +66,14 @@ def run(argv=None):
         | "ReadFromBQ_All" >> beam.io.Read(BigQuerySource(query=query_of_all, use_standard_sql=True))
         | "Projected_All" >> beam.ParDo(ProjectionBQ(), PROJECT_FIELDS_ALL, True, "cookies"))
 
-
         init_ch = (p
         | "ReadFromBQ_Ch" >> beam.io.Read(BigQuerySource(query=query_of_ch, use_standard_sql=True))
-        | "Projected_Ch" >> beam.ParDo(ProjectionBQ(), PROJECT_FIELDS_CH))
+        | "Projected_Ch" >> beam.ParDo(ProjectionBQ(), PROJECT_FIELDS_CH)
+        | "ChannelPvSum" >> CombineChPColl())
 
-        combine_pcoll = CombineChPColl(init_ch)
+        # combine_pcoll = CombineChPColl(init_ch)
+        combine_pcoll = {}
+        combine_pcoll.update(init_ch)
         combine_pcoll.update({'All': init_all})
 
         # (combine_pcoll
