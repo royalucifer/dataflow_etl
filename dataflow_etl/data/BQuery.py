@@ -1,5 +1,6 @@
 __all__ = ["get_query"]
 
+import io
 import os
 import re
 
@@ -25,7 +26,7 @@ def _read_sql_file(file, *args, **kwargs):
     if not file:
         raise ValueError("You must give the directory of file")
 
-    with open(file, 'r') as f:
+    with io.open(file, 'r', encoding="utf-8") as f:
         sql = "".join(f.readlines())
     sql = re.sub("\ufeff", "", sql).format(*args, **kwargs)
 
