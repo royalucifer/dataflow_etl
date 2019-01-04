@@ -16,13 +16,27 @@ FROM (
       WHEN title_0 = '社會' OR title_1 = '社會' OR title_2 = '社會' OR title_3 = '社會' THEN 'society' --'社會'
       WHEN title_0 = '數位' OR title_1 = '數位' OR title_2 = '數位' OR title_3 = '數位' THEN 'digital' --'數位'
       WHEN title_0 = '旅遊' OR title_1 = '旅遊' OR title_2 = '旅遊' OR title_3 = '旅遊' THEN 'travel' --'旅遊'
+
       WHEN title_0 = '噓！星聞' OR title_1 = '噓！星聞' OR title_2 = '噓！星聞' OR title_3 = '噓！星聞' THEN 'entertainment' --'娛樂'
+      WHEN  hostname = 'star.udn.com' THEN 'entertainment' --'娛樂'
+
       WHEN title_0 = '元氣網' OR title_1 = '元氣網' OR title_2 = '元氣網' OR title_3 = '元氣網' THEN 'health' --'健康'
+      WHEN  hostname = 'health.udn.com' THEN 'health' --'健康'
+
       WHEN title_0 = '發燒車訊' OR title_1 = '發燒車訊' OR title_2= '發燒車訊' OR title_3 = '發燒車訊' THEN 'car' --'汽車'
+      WHEN  hostname = 'autos.udn.com' THEN 'car' --'汽車'
+
       WHEN title_0 = 'udn遊戲角落' OR title_1 = 'udn遊戲角落' OR title_2= 'udn遊戲角落' OR title_3 = 'udn遊戲角落' THEN 'game' --'遊戲'
+      WHEN  hostname = 'game.udn.com' THEN 'game' --'遊戲'
+
       WHEN title_0 = '房地產' OR title_1 = '房地產' OR title_2= '房地產' OR title_3 = '房地產' THEN 'house' --'房產'
+      WHEN  hostname = 'house.udn.com' THEN 'house' --'房產'
+
       WHEN title_0 = 'OOPS! 新鮮事' OR title_1 = 'OOPS! 新鮮事' OR title_2= 'OOPS! 新鮮事' OR title_3 = 'OOPS! 新鮮事' THEN 'fun' --'趣聞'
-      WHEN title_0 = 'OOPS! 新鮮事' OR title_1 = 'OOPS! 新鮮事' OR title_2= 'OOPS! 新鮮事' OR title_3 = 'udnSTYLE 時尚.名人.生活風格' THEN 'fashion' --'時尚'
+      WHEN  hostname = 'oops.udn.com' THEN 'fun' --'趣聞'
+
+      WHEN title_0 = 'udnSTYLE 時尚.名人.生活風格' OR title_1 = 'udnSTYLE 時尚.名人.生活風格' OR title_2= 'udnSTYLE 時尚.名人.生活風格' OR title_3 = 'udnSTYLE 時尚.名人.生活風格' THEN 'fashion' --'時尚'
+      WHEN  hostname = 'style.udn.com' THEN 'fashion' --'時尚'
 
       WHEN title_0 = '2018九合一選舉' OR title_1 = '2018九合一選舉' THEN 'politic' --'政治'
       WHEN title_1 IN ('政治','九合一選戰焦點','藍綠各黨拚選戰','藍綠各黨拚2018','戰北市選情有變','九合一選後焦點') THEN 'politic' --'政治'
@@ -31,26 +45,32 @@ FROM (
       WHEN title_1 = '流行消費' THEN 'shopping' --'消費'
       WHEN title_0 = '生活' OR title_1 = '生活' OR title_2 = '生活' OR title_3 = '生活' THEN 'life' --'生活'
 
-      WHEN title_0 = '產經' OR title_1 = '產經' OR title_2 = '產經' OR title_3 = '產經' THEN 'finance' --'財經'
-      WHEN title_0 = '經濟日報' OR title_1 = '經濟日報' OR title_2 = '經濟日報' OR title_3 = '經濟日報' THEN 'finance' --'財經'
-
       WHEN title_0 = '股市' OR title_1 = '股市' OR title_2 = '股市' OR title_3 = '股市' THEN 'investment' --'投資'
       WHEN title_0 = '基金' OR title_1 = '基金' OR title_2 = '基金' OR title_3 = '基金' THEN 'investment' --'投資'
+      WHEN hostnmae = 'fund.udn.com' THEN 'investment' --'投資'
+
+      WHEN title_0 = '產經' OR title_1 = '產經' OR title_2 = '產經' OR title_3 = '產經' THEN 'finance' --'財經'
+      WHEN title_0 = '經濟日報' OR title_1 = '經濟日報' OR title_2 = '經濟日報' OR title_3 = '經濟日報' THEN 'finance' --'財經'
+      WHEN hostnmae = 'money.udn.com' THEN 'finance' --'投資'
 
       WHEN title_0 = '全球' OR title_1 = '全球' OR title_2 = '全球' OR title_3 = '全球' THEN 'global' --'國際'
       WHEN title_0 = '轉角國際' OR title_1 = '轉角國際' OR title_2 = '轉角國際 udn Global' OR title_3 = '轉角國際 udn Global' THEN 'global' --'國際'
+      WHEN hostname = 'global.udn.com' THEN 'global' --'國際'
 
       WHEN title_0 = '倡議家' OR title_1 = '倡議家' OR title_2 = '倡議家' OR title_3 = '倡議家' THEN 'topic' --'專題'
       WHEN title_0 = '時事話題' OR title_1 = '時事話題' OR title_2 = '時事話題' OR title_3 = '時事話題' THEN 'topic' --'專題'
       WHEN hostname = 'vision.udn.com' OR page_lv1 = '/upf/' THEN 'topic' --'專題'
-      WHEN hostname = 'topic.udn.com'THEN 'topic' --'專題'
+      WHEN hostname = 'topic.udn.com' THEN 'topic' --'專題'
+      WHEN hostnmae = 'ubrand.udn.com' THEN 'topic' --'專題'
 
       WHEN title_0 = '評論' OR title_1 = '評論' OR title_2 = '評論' OR title_3 = '評論' THEN 'comment' --'評論'
       WHEN title_0 = '鳴人堂' OR title_1 = '鳴人堂' OR title_2 = '鳴人堂' OR title_3 = '鳴人堂' THEN 'comment' --'評論'
+      WHEN hostnmae = 'opinion.udn.com' THEN 'comment' --'評論'
 
       WHEN title_0 = '運動' OR title_1 = '運動' OR title_2 = '運動' OR title_3 = '運動' THEN 'sport' --'運動'
       WHEN title_0 = '2018世足賽起義時刻' OR title_1 = '2018世足賽起義時刻' OR title_2 = '2018世足賽起義時刻' OR title_3 = '2018世足賽起義時刻' THEN 'sport' --'運動'
       WHEN title_0 = 'NBA 台灣' OR title_1 = 'NBA 台灣' OR title_2 = 'NBA 台灣' OR title_3 = 'NBA 台灣' THEN 'sport' --'運動'
+      WHEN hostname = 'nba.udn.com' THEN 'sport' --'運動'
 
       WHEN title_0 = '雜誌' OR title_1 = '雜誌' OR title_2 = '雜誌' OR title_3 = '雜誌' THEN 'book' --'閱讀'
       WHEN title_0 = 'udn 讀書吧' OR title_1 = 'udn 讀書吧' OR title_2 = 'udn 讀書吧' OR title_3 = 'udn 讀書吧' THEN 'book' --'閱讀'
@@ -68,6 +88,7 @@ FROM (
       cookies,
       hostname,
       page_lv1,
+      content_group_1,
       SPLIT(title, ' | ')[SAFE_OFFSET(0)] AS title_0,
       SPLIT(title, ' | ')[SAFE_OFFSET(1)] AS title_1,
       SPLIT(title, ' | ')[SAFE_OFFSET(2)] AS title_2,
@@ -79,6 +100,7 @@ FROM (
         clientId AS cookies,
         h.page.hostname AS hostname,
         h.page.pagePathLevel1 AS page_lv1,
+        h.contentGroup.contentGroup1 AS content_group_1,
         h.page.pageTitle AS title,
         h.time AS view_time,
         LEAD(h.time) OVER (PARTITION BY clientId, visitNumber ORDER BY h.hitNumber) AS lead_view_time
